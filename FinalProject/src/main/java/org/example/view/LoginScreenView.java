@@ -1,5 +1,7 @@
 package org.example.view;
 
+import org.example.control.DatabaseController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -94,38 +96,15 @@ public class LoginScreenView {
             password.setText("");
             username.requestFocus();
         } else {
-            var url = "jdbc:sqlite:./src/main/resources/userAccounts.db";
-            var sql = """
-                SELECT ID, PASSWORD, SALT FROM userAccounts WHERE ID = ?
-                """;
-
-            try (var connection = DriverManager.getConnection(url);
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setString(1, usernameText);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        if (String.valueOf(passwordText.concat
-                                (resultSet.getString("SALT")).hashCode())
-                                .equals(resultSet.getString("PASSWORD"))) {
-                            errorLabel.setText("Login Successful");
-                        }else {
-                            errorLabel.setText("Login Failed: Username and Password doesn't match");
-                            username.setText("");
-                            password.setText("");
-                            username.requestFocus();
-                        }
-                    } else {
-                        errorLabel.setText("Login Failed: Username and Password doesn't match");
-                        username.setText("");
-                        password.setText("");
-                        username.requestFocus();
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if(DatabaseController.verifyLogin(usernameText, passwordText)) {
+                errorLabel.setText("Login Successful");
+            } else {
+                errorLabel.setText("Login Failed: Username and Password doesn't match");
+                username.setText("");
+                password.setText("");
+                username.requestFocus();
             }
         }
-
     }
 
     private void addAccount() {
