@@ -95,6 +95,22 @@ public class LoginScreenView {
                }
            }
         });
+
+        adminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (DatabaseController.adminExists()) {
+                    createAccount.setEnabled(false);
+                }
+            }
+        });
+
+        userButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createAccount.setEnabled(true);
+            }
+        });
     }
 
     private void verifyLogin() {
@@ -132,8 +148,6 @@ public class LoginScreenView {
     private void addAccount() {
         String usernameText = username.getText();
         String passwordText = password.getText();
-        String salt = generateSalt();
-        String saltedPassword = String.valueOf(passwordText.concat(salt).hashCode());
 
         if (usernameText.isBlank() || passwordText.isBlank()) {
             errorLabel.setText("Creation Failed: Username and Password cannot be empty");
@@ -141,52 +155,37 @@ public class LoginScreenView {
             password.setText("");
             username.requestFocus();
         } else {
-            var url = "jdbc:sqlite:./src/main/resources/userAccounts.db";
-            var createTableSQL = """
-                CREATE TABLE IF NOT EXISTS userAccounts (
-                ID INTEGER PRIMARY KEY,
-                PASSWORD text,
-                SALT text
-                );
-                """;
-            var insertSQL = """
-                    INSERT INTO userAccounts VALUES (?, ?, ?);
-                    """;
-            try (var connection = DriverManager.getConnection(url);
-                var statement = connection.createStatement();
-                var preparedStatement = connection.prepareStatement(insertSQL)) {
-                preparedStatement.setString(1, usernameText);
-                preparedStatement.setString(2, saltedPassword);
-                preparedStatement.setString(3, salt);
-                statement.execute(createTableSQL);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                if (e.getMessage().contains("UNIQUE constraint failed")) {
-                    errorLabel.setText("Account with ID already exists");
-                    username.setText("");
-                    password.setText("");
-                    username.requestFocus();
-                } else {
-                    e.printStackTrace();
+            if (userButton.isSelected()) {
+                try {
+                    DatabaseController.insertUserRecord(usernameText, passwordText);
+                } catch (SQLException e) {
+                    if (e.getMessage().contains("UNIQUE constraint failed")) {
+                        errorLabel.setText("Account with ID already exists");
+                        username.setText("");
+                        password.setText("");
+                        username.requestFocus();
+                    } else {
+                        throw new RuntimeException(e);
+                    }
+                }
+            } else if (adminButton.isSelected()) {
+                try {
+                    DatabaseController.insertAdminRecord(usernameText, passwordText);
+                } catch (SQLException e) {
+                    if (e.getMessage().contains("UNIQUE constraint failed")) {
+                        errorLabel.setText("Account with ID already exists");
+                        username.setText("");
+                        password.setText("");
+                        username.requestFocus();
+                    } else {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
     }
 
-    /**
-     * Creates a string made up of random characters to be used as a password salt
-     * @return A string of 10 random characters, symbols, and numbers
-     */
-    protected String generateSalt() {
-        String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*(){}<>?,./";
-        Random random = new Random();
-        String salt = "";
 
-        for (int i = 0; i < 10; i++) {
-            salt = salt + String.valueOf(characters.charAt(random.nextInt(characters.length())));
-        }
-        return salt;
-    }
 
 
 }
