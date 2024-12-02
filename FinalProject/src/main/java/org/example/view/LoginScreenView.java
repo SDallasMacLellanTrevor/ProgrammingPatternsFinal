@@ -70,6 +70,7 @@ public class LoginScreenView {
         frame.setVisible(true);
         frame.add(userButton);
         frame.add(adminButton);
+        userButton.setSelected(true);
 
         login.addActionListener(new ActionListener() {
             @Override
@@ -106,13 +107,24 @@ public class LoginScreenView {
             password.setText("");
             username.requestFocus();
         } else {
-            if(DatabaseController.verifyUserLogin(usernameText, passwordText)) {
-                errorLabel.setText("Login Successful");
-            } else {
-                errorLabel.setText("Login Failed: Username and Password doesn't match");
-                username.setText("");
-                password.setText("");
-                username.requestFocus();
+            if (userButton.isSelected()) {
+                if(DatabaseController.verifyUserLogin(usernameText, passwordText)) {
+                    errorLabel.setText("Login Successful");
+                } else {
+                    errorLabel.setText("Login Failed: Username and Password doesn't match");
+                    username.setText("");
+                    password.setText("");
+                    username.requestFocus();
+                }
+            } else if (adminButton.isSelected()) {
+                if(DatabaseController.verifyAdminLogin(usernameText, passwordText)) {
+                    errorLabel.setText("Login Successful");
+                } else {
+                    errorLabel.setText("Login Failed: Username and Password doesn't match");
+                    username.setText("");
+                    password.setText("");
+                    username.requestFocus();
+                }
             }
         }
     }
