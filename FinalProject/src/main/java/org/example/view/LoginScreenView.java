@@ -20,6 +20,9 @@ public class LoginScreenView {
     JButton login = new JButton("Login");
     JButton createAccount = new JButton("Create Account");
     JLabel errorLabel = new JLabel("", JLabel.CENTER);
+    ButtonGroup loginGroup = new ButtonGroup();
+    JRadioButton userButton = new JRadioButton("User Login");
+    JRadioButton adminButton = new JRadioButton("Admin Login");
 
     public LoginScreenView() {
         frame.setSize(new Dimension(800, 600));
@@ -49,6 +52,11 @@ public class LoginScreenView {
         createAccount.setBounds(260, 350,120, 50);
         createAccount.setFont(new Font("Arial", Font.BOLD, 11));
 
+        loginGroup.add(userButton);
+        loginGroup.add(adminButton);
+        userButton.setBounds(300, 100, 100, 15);
+        adminButton.setBounds(400, 100, 100, 15);
+
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLayout(null);
         frame.setResizable(false);
@@ -60,6 +68,8 @@ public class LoginScreenView {
         frame.add(usernameLabel);
         frame.add(errorLabel);
         frame.setVisible(true);
+        frame.add(userButton);
+        frame.add(adminButton);
 
         login.addActionListener(new ActionListener() {
             @Override
@@ -96,7 +106,7 @@ public class LoginScreenView {
             password.setText("");
             username.requestFocus();
         } else {
-            if(DatabaseController.verifyLogin(usernameText, passwordText)) {
+            if(DatabaseController.verifyUserLogin(usernameText, passwordText)) {
                 errorLabel.setText("Login Successful");
             } else {
                 errorLabel.setText("Login Failed: Username and Password doesn't match");

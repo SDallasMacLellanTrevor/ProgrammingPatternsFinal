@@ -5,7 +5,7 @@ import java.sql.*;
 public class DatabaseController {
     private static String url = "jdbc:sqlite:./src/main/resources/userAccounts.db";
 
-    public static boolean verifyLogin(String usernameText, String passwordText) {
+    public static boolean verifyUserLogin(String usernameText, String passwordText) {
         var sql = """
                 SELECT ID, PASSWORD, SALT FROM userAccounts WHERE ID = ?
                 """;
