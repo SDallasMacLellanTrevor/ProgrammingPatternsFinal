@@ -1,5 +1,7 @@
 package org.example.control;
 
+import org.example.view.LoginScreenView;
+
 public class WindowController {
     private static WindowController instance;
 
@@ -16,5 +18,12 @@ public class WindowController {
         }
         return instance;
     }
+
+    public static void initialize() {
+        DatabaseController.initUserTable();
+        DatabaseController.initAdminTable();
+        LoginScreenView loginScreenView = new LoginScreenView();
+    }
+
 
 }
