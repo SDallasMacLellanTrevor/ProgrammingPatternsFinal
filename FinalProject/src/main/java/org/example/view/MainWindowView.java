@@ -72,7 +72,6 @@ public class MainWindowView {
 
     private void initAccounts() {
         List<BankAccountModel> accountModels = getAccounts();
-        System.out.println("Number of accounts: " + accountModels.size());
         accountPanel.removeAll();
         accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.Y_AXIS));
 
@@ -101,7 +100,7 @@ public class MainWindowView {
             depositButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    deposit(accountModel.getID());
+                    deposit(accountModel.getID(), accountModel.getBalance());
                 }
             });
 
@@ -146,7 +145,17 @@ public class MainWindowView {
         withdrawButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Withdraw Button clicked"); // Until DB method is created
+                double newBalance = balance - Double.parseDouble(textArea.getText());
+                System.out.println(balance);
+                System.out.println(newBalance);
+                if (newBalance < 0) {
+                    System.out.println("TOO POOR"); // Until new label is created
+                    withdrawFrame.dispose();
+                } else {
+                    DatabaseController.updateAccountBalance(id, newBalance);
+                    initAccounts();
+                    withdrawFrame.dispose();
+                }
             }
         });
 
@@ -161,7 +170,7 @@ public class MainWindowView {
             @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (!Character.isDigit(c)) {
+                if (!Character.isDigit(c) && c != '.') {
                     e.consume();
                 }
             }
@@ -176,7 +185,7 @@ public class MainWindowView {
         withdrawFrame.setVisible(true);
     }
 
-    private void deposit(int id) {
+    private void deposit(int id, double balance) {
         JFrame depositFrame = new JFrame();
         depositFrame.setLayout(null);
         depositFrame.setSize(new Dimension(300, 158));
@@ -187,15 +196,18 @@ public class MainWindowView {
         JTextArea textArea = new JTextArea();
         textArea.setBounds(0, 50, 284, 20);
         textArea.setBorder(BorderFactory.createLineBorder(Color.black, 2));
-        JButton withdrawButton = new JButton("Withdraw");
-        withdrawButton.setBounds(0, 70, 150, 50);
+        JButton depositButton = new JButton("Deposit");
+        depositButton.setBounds(0, 70, 150, 50);
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setBounds(149, 70, 150, 50);
 
-        withdrawButton.addActionListener(new ActionListener() {
+        depositButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Deposit Button clicked"); // Until DB method is created
+                double newBalance = Double.parseDouble(textArea.getText()) + balance;
+                DatabaseController.updateAccountBalance(id, newBalance);
+                initAccounts();
+                depositFrame.dispose();
             }
         });
 
@@ -210,7 +222,7 @@ public class MainWindowView {
             @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
-                if (!Character.isDigit(c)) {
+                if (!Character.isDigit(c) && c != '.') {
                     e.consume();
                 }
             }
@@ -218,7 +230,7 @@ public class MainWindowView {
 
         depositFrame.add(amount);
         depositFrame.add(textArea);
-        depositFrame.add(withdrawButton);
+        depositFrame.add(depositButton);
         depositFrame.add(cancelButton);
         depositFrame.setResizable(false);
         depositFrame.setLocation(frame.getWidth()/3, frame.getHeight()/3);
