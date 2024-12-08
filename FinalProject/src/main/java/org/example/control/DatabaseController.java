@@ -1,6 +1,8 @@
 package org.example.control;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class DatabaseController {
@@ -108,7 +110,7 @@ public class DatabaseController {
 
     public static boolean verifyUserLogin(String usernameText, String passwordText) {
         String sql = """
-                SELECT ID, PASSWORD, SALT FROM userAccounts WHERE ID = ?
+                SELECT USERID, PASSWORD, SALT FROM userAccounts WHERE USERID = ?
                 """;
 
         try (Connection connection = DriverManager.getConnection(userUrl);
@@ -131,7 +133,7 @@ public class DatabaseController {
 
     public static boolean verifyAdminLogin(String usernameText, String passwordText) {
         String sql = """
-                SELECT ID, PASSWORD, SALT FROM adminAccounts WHERE ID = ?
+                SELECT ADMINID, PASSWORD, SALT FROM adminAccounts WHERE ADMINID = ?
                 """;
         try (Connection connection = DriverManager.getConnection(adminUrl);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -164,6 +166,39 @@ public class DatabaseController {
                     return false;
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<String> getBankAccountByID(String userID) {
+        String sql = """
+                SELECT ID, TYPE, VALUE FROM bankAccounts WHERE USERID = ?
+                """;
+        try (Connection connection = DriverManager.getConnection(bankUrl);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            ArrayList<String> accounts = new ArrayList<>();
+            preparedStatement.setString(1, userID);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                        accounts.add(resultSet.getString("ID") + "," + resultSet.getString("TYPE") + "," + resultSet.getString("VALUE"));
+                    }
+                return accounts;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void updateAccountBalance(int accountID, double newBalance) {
+        String sql = """
+            UPDATE bankAccounts SET VALUE = ? WHERE ID = ?
+            """;
+        try (Connection connection = DriverManager.getConnection(bankUrl);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setDouble(1, newBalance);
+            preparedStatement.setInt(2, accountID);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -4,12 +4,20 @@ public class BankAccountFactory {
     public BankAccountFactory() {
     }
 
-    public BankAccountModel createBankAccount(String accountType) {
+    public static BankAccountModel createBankAccount(String accountType, int ID) {
+        BankAccountModel account;
         switch (accountType) {
-            case "chequing":return new ChequingAccountModel();
-            case "savings":return new SavingsAccountModel();
-            default: return null;
+            case "chequing":
+                account = new ChequingAccountModel();
+                break;
+            case "savings":
+                account = new SavingsAccountModel();
+                break;
+            default:
+                return null;
         }
+        account.setID(ID);
+        return account;
     }
 
 }

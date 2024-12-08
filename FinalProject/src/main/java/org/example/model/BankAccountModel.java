@@ -29,7 +29,6 @@ public abstract class BankAccountModel {
     }
 
     protected BankAccountModel() {
-        ID = ++IDCounter;
         balance = 0;
     }
 
