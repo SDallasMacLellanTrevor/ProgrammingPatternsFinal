@@ -190,8 +190,4 @@ public class LoginScreenView {
             }
         }
     }
-
-
-
-
 }

@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,17 +30,18 @@ public class MainWindowView {
         frame.setLocation(x, y);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        accountScrollPane.setBounds(200,100,400, 50);
+        accountScrollPane.setBounds(200,100,400, 100);
         accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.Y_AXIS));
         accountScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         accountScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         frame.add(accountScrollPane);
-        newChequing.setBounds(399,150,200, 20);
-        newSaving.setBounds(200,150,199, 20);
+        newChequing.setBounds(399,200,200, 20);
+        newSaving.setBounds(200,200,199, 20);
         frame.add(newChequing);
         frame.add(newSaving);
 
         initAccounts();
+        frame.setResizable(false);
         frame.setVisible(true);
 
 
@@ -91,14 +94,14 @@ public class MainWindowView {
             withdrawButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("WITHDRAW for account " + accountModel.getID());
+                    withdraw(accountModel.getID(), accountModel.getBalance());
                 }
             });
 
             depositButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("DEPOSIT for account " + accountModel.getID());
+                    deposit(accountModel.getID());
                 }
             });
 
@@ -122,5 +125,103 @@ public class MainWindowView {
         }
 
         return newAccounts;
+    }
+
+    private void withdraw(int id, double balance) {
+        JFrame withdrawFrame = new JFrame();
+        withdrawFrame.setLayout(null);
+        withdrawFrame.setSize(new Dimension(300, 158));
+        withdrawFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JLabel amount = new JLabel("Withdraw Amount:");
+        amount.setBounds(100,0, 150, 50);
+        JTextArea textArea = new JTextArea();
+        textArea.setBounds(0, 50, 284, 20);
+        textArea.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+        JButton withdrawButton = new JButton("Withdraw");
+        withdrawButton.setBounds(0, 70, 150, 50);
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBounds(149, 70, 150, 50);
+
+        withdrawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Withdraw Button clicked"); // Until DB method is created
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                withdrawFrame.dispose();
+            }
+        });
+
+        textArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        });
+
+        withdrawFrame.add(amount);
+        withdrawFrame.add(textArea);
+        withdrawFrame.add(withdrawButton);
+        withdrawFrame.add(cancelButton);
+        withdrawFrame.setResizable(false);
+        withdrawFrame.setLocation(frame.getWidth()/3, frame.getHeight()/3);
+        withdrawFrame.setVisible(true);
+    }
+
+    private void deposit(int id) {
+        JFrame depositFrame = new JFrame();
+        depositFrame.setLayout(null);
+        depositFrame.setSize(new Dimension(300, 158));
+        depositFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JLabel amount = new JLabel("Deposit Amount:");
+        amount.setBounds(100,0, 150, 50);
+        JTextArea textArea = new JTextArea();
+        textArea.setBounds(0, 50, 284, 20);
+        textArea.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+        JButton withdrawButton = new JButton("Withdraw");
+        withdrawButton.setBounds(0, 70, 150, 50);
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBounds(149, 70, 150, 50);
+
+        withdrawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Deposit Button clicked"); // Until DB method is created
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                depositFrame.dispose();
+            }
+        });
+
+        textArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        });
+
+        depositFrame.add(amount);
+        depositFrame.add(textArea);
+        depositFrame.add(withdrawButton);
+        depositFrame.add(cancelButton);
+        depositFrame.setResizable(false);
+        depositFrame.setLocation(frame.getWidth()/3, frame.getHeight()/3);
+        depositFrame.setVisible(true);
     }
 }

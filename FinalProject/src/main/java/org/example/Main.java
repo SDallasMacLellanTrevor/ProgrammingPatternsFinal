@@ -33,6 +33,16 @@ public class Main {
 //        } catch (SQLException e) {
 //            throw new RuntimeException(e);
 //        }
+//
+//        try (Connection connection = DriverManager.getConnection(bankUrl);
+//             Statement statement = connection.createStatement()) {
+//            String SQL = """
+//                DROP TABLE IF EXISTS  bankAccounts
+//                """;
+//            statement.executeUpdate(SQL);
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
 
         WindowController.initialize();
     }
