@@ -22,6 +22,7 @@ public class MainWindowView {
     JScrollPane TextAreaScrollPane = new JScrollPane(TextArea);
     JButton newChequing = new JButton("Open new Chequing account");
     JButton newSaving = new JButton("Open new Savings account");
+    JLabel errorLabel = new JLabel("", JLabel.CENTER);
 
     public MainWindowView(int x, int y, String userID) {
         this.userID = Integer.parseInt(userID);
@@ -39,6 +40,10 @@ public class MainWindowView {
         newSaving.setBounds(200,200,199, 20);
         frame.add(newChequing);
         frame.add(newSaving);
+        frame.add(errorLabel);
+        errorLabel.setBounds(600, 200, 400, 100);
+        errorLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        errorLabel.setForeground(Color.RED);
 
         initAccounts();
         frame.setResizable(false);
@@ -49,7 +54,7 @@ public class MainWindowView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (accountPanel.getComponents().length >= 10) {
-                    System.out.println("TOO MANY ACCOUNTS");    // FIX THIS LATER WITH A LABEL
+                    errorLabel.setText("ERROR: MAX ACCOUNTS REACHED");
                 } else {
                     DatabaseController.insertBankRecord("CHEQUING", Integer.parseInt(userID));
                     initAccounts();
@@ -61,7 +66,7 @@ public class MainWindowView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (accountPanel.getComponents().length >= 10) {
-                    System.out.println("TOO MANY ACCOUNTS");    // FIX THIS LATER WITH A LABEL
+                    errorLabel.setText("ERROR: MAX ACCOUNTS REACHED");
                 } else {
                     DatabaseController.insertBankRecord("SAVINGS", Integer.parseInt(userID));
                     initAccounts();
@@ -149,11 +154,12 @@ public class MainWindowView {
                 System.out.println(balance);
                 System.out.println(newBalance);
                 if (newBalance < 0) {
-                    System.out.println("TOO POOR"); // Until new label is created
+                    errorLabel.setText("NOT ENOUGH FUNDS IN ACCOUNT TO WITHDRAW");
                     withdrawFrame.dispose();
                 } else {
                     DatabaseController.updateAccountBalance(id, newBalance);
                     initAccounts();
+                    errorLabel.setText("FUNDS WITHDRAWN SUCCESSFULLY");
                     withdrawFrame.dispose();
                 }
             }
@@ -207,6 +213,7 @@ public class MainWindowView {
                 double newBalance = Double.parseDouble(textArea.getText()) + balance;
                 DatabaseController.updateAccountBalance(id, newBalance);
                 initAccounts();
+                errorLabel.setText("FUNDS DEPOSITED SUCCESSFULLY");
                 depositFrame.dispose();
             }
         });
