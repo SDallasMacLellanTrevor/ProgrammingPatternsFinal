@@ -117,6 +117,7 @@ public class LoginScreenView {
         String usernameText = username.getText();
         String passwordText = password.getText();
 
+
         if (usernameText.isBlank() || passwordText.isBlank()) {
             errorLabel.setText("Login Failed: Username and Password cannot be empty");
             username.setText("");
@@ -125,7 +126,9 @@ public class LoginScreenView {
         } else {
             if (userButton.isSelected()) {
                 if(DatabaseController.verifyUserLogin(usernameText, passwordText)) {
-                    errorLabel.setText("Login Successful");
+                    MainWindowView mainWindowView = new MainWindowView(frame.getX(), frame.getY(), usernameText);
+                    frame.setEnabled(false);
+                    frame.dispose();
                 } else {
                     errorLabel.setText("Login Failed: Username and Password doesn't match");
                     username.setText("");
@@ -158,6 +161,9 @@ public class LoginScreenView {
             if (userButton.isSelected()) {
                 try {
                     DatabaseController.insertUserRecord(usernameText, passwordText);
+                    MainWindowView mainWindowView = new MainWindowView(frame.getX(), frame.getY(), usernameText);
+                    frame.setEnabled(false);
+                    frame.dispose();
                 } catch (SQLException e) {
                     if (e.getMessage().contains("UNIQUE constraint failed")) {
                         errorLabel.setText("Account with ID already exists");

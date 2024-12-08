@@ -66,7 +66,6 @@ public class DatabaseController {
                     INSERT INTO userAccounts VALUES (?, ?, ?);
                     """;
         try (Connection connection = DriverManager.getConnection(userUrl);
-             Statement statement = connection.createStatement();
              PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, saltedPassword);
@@ -83,7 +82,6 @@ public class DatabaseController {
                     INSERT INTO adminAccounts VALUES (?, ?, ?);
                     """;
         try (Connection connection = DriverManager.getConnection(adminUrl);
-             Statement statement = connection.createStatement();
              PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, saltedPassword);
@@ -92,18 +90,19 @@ public class DatabaseController {
         }
     }
 
-    public static void insertBankRecord(String type, int userID) throws SQLException {
+    public static void insertBankRecord(String type, int userID) {
 
         var insertSQL = """
-                    INSERT INTO bankAccounts VALUES (?, ?, ?);
+                    INSERT INTO bankAccounts (TYPE, VALUE, USERID) VALUES (?, ?, ?);
                     """;
-        try (Connection connection = DriverManager.getConnection(adminUrl);
-             Statement statement = connection.createStatement();
+        try (Connection connection = DriverManager.getConnection(bankUrl);
              PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
             preparedStatement.setString(1, type);
-            preparedStatement.setInt(2, 0);
+            preparedStatement.setString(2, "0.00");
             preparedStatement.setInt(3, userID);
             preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -111,6 +110,7 @@ public class DatabaseController {
         String sql = """
                 SELECT ID, PASSWORD, SALT FROM userAccounts WHERE ID = ?
                 """;
+
         try (Connection connection = DriverManager.getConnection(userUrl);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, usernameText);

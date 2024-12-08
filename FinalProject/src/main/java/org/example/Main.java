@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.control.WindowController;
+import org.example.view.MainWindowView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -16,7 +17,7 @@ public class Main {
         try (Connection connection = DriverManager.getConnection(userUrl);
              Statement statement = connection.createStatement()) {
             String SQL = """
-                DROP TABLE userAccounts
+                DROP TABLE IF EXISTS userAccounts
                 """;
             statement.executeUpdate(SQL);
         } catch (SQLException e) {
@@ -26,14 +27,15 @@ public class Main {
         try (Connection connection = DriverManager.getConnection(adminUrl);
              Statement statement = connection.createStatement()) {
             String SQL = """
-                DROP TABLE adminAccounts
+                DROP TABLE IF EXISTS  adminAccounts
                 """;
             statement.executeUpdate(SQL);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-
         WindowController.initialize();
+
+
     }
 }
