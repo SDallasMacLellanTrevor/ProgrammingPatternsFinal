@@ -22,6 +22,7 @@ public class WindowController {
     public static void initialize() {
         DatabaseController.initUserTable();
         DatabaseController.initAdminTable();
+        DatabaseController.initBankTable();
         LoginScreenView loginScreenView = new LoginScreenView();
     }
 

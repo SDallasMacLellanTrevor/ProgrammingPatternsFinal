@@ -4,15 +4,16 @@ import java.sql.*;
 import java.util.Random;
 
 public class DatabaseController {
-    private static String userUrl = "jdbc:sqlite:./src/main/resources/userAccounts.db";
-    private static String adminUrl =  "jdbc:sqlite:./src/main/resources/adminAccounts.db";
+    private static String userUrl = "jdbc:sqlite:./FinalProject/src/main/resources/userAccounts.db";
+    private static String adminUrl =  "jdbc:sqlite:./FinalProject/src/main/resources/adminAccounts.db";
+    private static String bankUrl =  "jdbc:sqlite:./FinalProject/src/main/resources/bankAccounts.db";
 
     public static void initUserTable() {
         try (Connection connection = DriverManager.getConnection(userUrl);
             Statement statement = connection.createStatement()) {
             String SQL = """
                 CREATE TABLE IF NOT EXISTS userAccounts (
-                ID NUMERIC PRIMARY KEY,
+                USERID INTEGER PRIMARY KEY,
                 PASSWORD NUMERIC NOT NULL,
                 SALT TEXT NOT NULL
                 );
@@ -28,9 +29,27 @@ public class DatabaseController {
              Statement statement = connection.createStatement()) {
             String SQL = """
                 CREATE TABLE IF NOT EXISTS adminAccounts (
-                ID NUMERIC PRIMARY KEY,
+                ADMINID INTEGER PRIMARY KEY,
                 PASSWORD NUMERIC NOT NULL,
                 SALT TEXT NOT NULL
+                );
+                """;
+            statement.executeUpdate(SQL);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void initBankTable() {
+        try (Connection connection = DriverManager.getConnection(bankUrl);
+             Statement statement = connection.createStatement()) {
+            String SQL = """
+                CREATE TABLE IF NOT EXISTS bankAccounts (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                TYPE TEXT NOT NULL,
+                VALUE TEXT NOT NULL,
+                USERID INTEGER NOT NULL,
+                FOREIGN KEY (USERID) REFERENCES userAccounts(USERID)
                 );
                 """;
             statement.executeUpdate(SQL);
@@ -69,6 +88,21 @@ public class DatabaseController {
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, saltedPassword);
             preparedStatement.setString(3, salt);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public static void insertBankRecord(String type, int userID) throws SQLException {
+
+        var insertSQL = """
+                    INSERT INTO bankAccounts VALUES (?, ?, ?);
+                    """;
+        try (Connection connection = DriverManager.getConnection(adminUrl);
+             Statement statement = connection.createStatement();
+             PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+            preparedStatement.setString(1, type);
+            preparedStatement.setInt(2, 0);
+            preparedStatement.setInt(3, userID);
             preparedStatement.executeUpdate();
         }
     }
