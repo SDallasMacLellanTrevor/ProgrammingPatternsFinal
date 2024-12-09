@@ -231,7 +231,7 @@ public class DatabaseController {
             ArrayList<String> accounts = new ArrayList<>();
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 while (resultSet.next()) {
-                    accounts.add(resultSet.getString("USERID"));
+                    accounts.add(resultSet.getString("ADMINID"));
                 }
                 return accounts;
             }
@@ -260,11 +260,44 @@ public class DatabaseController {
         }
     }
 
+    public static boolean adminExists(String adminID) {
+        String sql = """
+                SELECT ADMINID FROM adminAccounts WHERE ADMINID = ?
+                """;
+        try (Connection connection = DriverManager.getConnection(adminUrl);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            ArrayList<String> accounts = new ArrayList<>();
+            preparedStatement.setString(1, adminID);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void deleteUserRecord(String userID) {
         String sql = """
                 DELETE FROM userAccounts WHERE USERID = ?
                 """;
         try (Connection connection = DriverManager.getConnection(userUrl);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, userID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void deleteAdminRecord(String userID) {
+        String sql = """
+                DELETE FROM adminAccounts WHERE ADMINID = ?
+                """;
+        try (Connection connection = DriverManager.getConnection(adminUrl);
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, userID);
             preparedStatement.executeUpdate();
