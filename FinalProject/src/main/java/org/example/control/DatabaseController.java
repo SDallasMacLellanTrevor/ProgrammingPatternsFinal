@@ -51,7 +51,7 @@ public class DatabaseController {
                 TYPE TEXT NOT NULL,
                 VALUE TEXT NOT NULL,
                 USERID INTEGER NOT NULL,
-                FOREIGN KEY (USERID) REFERENCES userAccounts(USERID)
+                FOREIGN KEY (USERID) REFERENCES userAccounts(USERID) ON DELETE CASCADE
                 );
                 """;
             statement.executeUpdate(SQL);
