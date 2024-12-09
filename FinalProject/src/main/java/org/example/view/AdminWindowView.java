@@ -21,6 +21,8 @@ public class AdminWindowView {
     JPanel adminAccountPanel = new JPanel();
     JScrollPane adminAccountScrollPane = new JScrollPane(adminAccountPanel);
 
+    JLabel errorLabel = new JLabel("", JLabel.CENTER);
+
     JLabel signedIn = new JLabel("", JLabel.CENTER);
     JButton signOut = new JButton("Sign Out");
 
@@ -69,6 +71,11 @@ public class AdminWindowView {
         frame.add(newAdmin);
         frame.add(deleteAdmin);
 
+        errorLabel.setBounds(220, 200, 400, 100);
+        errorLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+        errorLabel.setForeground(Color.RED);
+        frame.add(errorLabel);
+
         initAccounts();
         initAdminAccounts();
         frame.setResizable(false);
@@ -111,6 +118,8 @@ public class AdminWindowView {
                 if (!selectedAdmin.equals(userID)) {
                     DatabaseController.deleteAdminRecord(selectedAdmin);
                     initAdminAccounts();
+                } else {
+                    errorLabel.setText("Cannot delete current admin");
                 }
             }
         });
@@ -241,6 +250,7 @@ public class AdminWindowView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (DatabaseController.accountExists(textArea.getText())) {
+                    errorLabel.setText("User with ID already exists");
                     addFrame.dispose();
                 } else {
                     try {
@@ -309,6 +319,7 @@ public class AdminWindowView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (DatabaseController.adminExists(textArea.getText())) {
+                    errorLabel.setText("Admin with ID already exists");
                     addFrame.dispose();
                 } else {
                     try {
