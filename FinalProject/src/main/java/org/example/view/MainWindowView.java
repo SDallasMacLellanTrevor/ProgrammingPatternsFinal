@@ -15,11 +15,10 @@ import java.util.List;
 public class MainWindowView {
     private int userID;
     JFrame frame = new JFrame();
-
+    JLabel signedIn = new JLabel("", JLabel.CENTER);
+    JButton signOut = new JButton("Sign Out");
     JPanel accountPanel = new JPanel();
     JScrollPane accountScrollPane = new JScrollPane(accountPanel);
-    JTextArea TextArea = new JTextArea();
-    JScrollPane TextAreaScrollPane = new JScrollPane(TextArea);
     JButton newChequing = new JButton("Open new Chequing account");
     JButton newSaving = new JButton("Open new Savings account");
     JLabel errorLabel = new JLabel("", JLabel.CENTER);
@@ -31,6 +30,11 @@ public class MainWindowView {
         frame.setLocation(x, y);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        signedIn.setFont(new Font("Arial", Font.PLAIN, 40));
+        signedIn.setBounds(200, 20, 400, 60);
+        signedIn.setText("Signed in as user: " + userID);
+        frame.add(signedIn);
+
         accountScrollPane.setBounds(200,100,400, 100);
         accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.Y_AXIS));
         accountScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -41,14 +45,26 @@ public class MainWindowView {
         frame.add(newChequing);
         frame.add(newSaving);
         frame.add(errorLabel);
-        errorLabel.setBounds(600, 200, 400, 100);
+        errorLabel.setBounds(220, 200, 400, 100);
         errorLabel.setFont(new Font("Times New Roman", Font.PLAIN, 20));
         errorLabel.setForeground(Color.RED);
+
+        signOut.setBounds(300, 300, 200, 50);
+        signOut.setFont(new Font("Times New Roman", Font.PLAIN, 15));
+        frame.add(signOut);
 
         initAccounts();
         frame.setResizable(false);
         frame.setVisible(true);
 
+        signOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LoginScreenView loginScreenView = new LoginScreenView();
+                frame.setEnabled(false);
+                frame.dispose();
+            }
+        });
 
         newChequing.addActionListener(new ActionListener() {
             @Override
@@ -151,8 +167,6 @@ public class MainWindowView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 double newBalance = balance - Double.parseDouble(textArea.getText());
-                System.out.println(balance);
-                System.out.println(newBalance);
                 if (newBalance < 0) {
                     errorLabel.setText("NOT ENOUGH FUNDS IN ACCOUNT TO WITHDRAW");
                     withdrawFrame.dispose();

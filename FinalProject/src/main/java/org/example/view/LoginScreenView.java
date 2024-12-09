@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.*;
-import java.util.Random;
 
 public class LoginScreenView {
     JFrame frame = new JFrame("Login");
@@ -137,7 +136,9 @@ public class LoginScreenView {
                 }
             } else if (adminButton.isSelected()) {
                 if(DatabaseController.verifyAdminLogin(usernameText, passwordText)) {
-                    errorLabel.setText("Login Successful");
+                    AdminWindowView adminWindowView = new AdminWindowView(frame.getX(), frame.getY(), usernameText);
+                    frame.setEnabled(false);
+                    frame.dispose();
                 } else {
                     errorLabel.setText("Login Failed: Username and Password doesn't match");
                     username.setText("");
@@ -177,6 +178,9 @@ public class LoginScreenView {
             } else if (adminButton.isSelected()) {
                 try {
                     DatabaseController.insertAdminRecord(usernameText, passwordText);
+                    AdminWindowView adminWindowView = new AdminWindowView(frame.getX(), frame.getY(), usernameText);
+                    frame.setEnabled(false);
+                    frame.dispose();
                 } catch (SQLException e) {
                     if (e.getMessage().contains("UNIQUE constraint failed")) {
                         errorLabel.setText("Account with ID already exists");

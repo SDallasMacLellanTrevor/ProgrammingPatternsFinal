@@ -157,7 +157,7 @@ public class DatabaseController {
         try (Connection connection = DriverManager.getConnection(adminUrl);
         Statement statement = connection.createStatement()) {
             String sql = """
-                SELECT ID FROM adminAccounts
+                SELECT ADMINID FROM adminAccounts
                 """;
             try (ResultSet resultSet = statement.executeQuery(sql)) {
                 if (resultSet.next()) {
@@ -181,7 +181,7 @@ public class DatabaseController {
             preparedStatement.setString(1, userID);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                        accounts.add(resultSet.getString("ID") + "," + resultSet.getString("TYPE") + "," + resultSet.getString("VALUE"));
+                        accounts.add(resultSet.getString("USERID") + "," + resultSet.getString("TYPE") + "," + resultSet.getString("VALUE"));
                     }
                 return accounts;
             }
