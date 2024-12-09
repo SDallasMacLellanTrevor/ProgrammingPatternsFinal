@@ -32,7 +32,7 @@ public class MainWindowView {
 
         signedIn.setFont(new Font("Arial", Font.PLAIN, 40));
         signedIn.setBounds(200, 20, 400, 60);
-        signedIn.setText("Signed in as user: " + userID);
+        signedIn.setText("Signed in as User: " + userID);
         frame.add(signedIn);
 
         accountScrollPane.setBounds(200,100,400, 100);
