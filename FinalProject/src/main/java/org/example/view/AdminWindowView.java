@@ -1,9 +1,13 @@
 package org.example.view;
 
+import org.example.control.DatabaseController;
+import org.example.model.BankAccountModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class AdminWindowView {
 
@@ -54,7 +58,22 @@ public class AdminWindowView {
     }
 
     private void initAccounts() {
+        List<String> users = DatabaseController.getBankAccounts();
+        accountPanel.removeAll();
+        accountPanel.setLayout(new BoxLayout(accountPanel, BoxLayout.Y_AXIS));
 
+        for (String user : users) {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            JLabel typeLabel = new JLabel("Account: " + user);
+            panel.add(typeLabel);
+            panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+         
+            accountPanel.add(panel);
+        }
+
+        accountPanel.revalidate();
+        accountPanel.repaint();
     }
 
 }

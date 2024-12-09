@@ -204,6 +204,42 @@ public class DatabaseController {
         }
     }
 
+    public static List<String> getBankAccounts() {
+        String sql = """
+                SELECT USERID FROM userAccounts
+                """;
+        try (Connection connection = DriverManager.getConnection(userUrl);
+             Statement statement = connection.createStatement()) {
+            ArrayList<String> accounts = new ArrayList<>();
+            try (ResultSet resultSet = statement.executeQuery(sql)) {
+                while (resultSet.next()) {
+                    accounts.add(resultSet.getString("USERID"));
+                }
+                return accounts;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<String> getAdminAccounts() {
+        String sql = """
+                SELECT ADMINID FROM adminAccounts
+                """;
+        try (Connection connection = DriverManager.getConnection(adminUrl);
+             Statement statement = connection.createStatement()) {
+            ArrayList<String> accounts = new ArrayList<>();
+            try (ResultSet resultSet = statement.executeQuery(sql)) {
+                while (resultSet.next()) {
+                    accounts.add(resultSet.getString("USERID"));
+                }
+                return accounts;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Creates a string made up of random characters to be used as a password salt
      * @return A string of 10 random characters, symbols, and numbers
