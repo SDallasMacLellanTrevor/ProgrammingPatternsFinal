@@ -7,11 +7,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class AdminWindowView {
 
     private int userID;
+    private String selectedUser;
     JFrame frame = new JFrame();
     JPanel adminPanel = new JPanel();
     JPanel accountPanel = new JPanel();
@@ -19,6 +22,9 @@ public class AdminWindowView {
 
     JLabel signedIn = new JLabel("", JLabel.CENTER);
     JButton signOut = new JButton("Sign Out");
+
+    JButton newAccount = new JButton("Create a new user account");
+    JButton deleteAccount = new JButton("Delete selected account");
 
     public AdminWindowView(int x, int y, String userID) {
         this.userID = Integer.parseInt(userID);
@@ -32,7 +38,7 @@ public class AdminWindowView {
         signedIn.setText("Signed in as Admin: " + userID);
         frame.add(signedIn);
 
-        signOut.setBounds(300, 300, 200, 50);
+        signOut.setBounds(300, 500, 200, 50);
         signOut.setFont(new Font("Times New Roman", Font.PLAIN, 15));
         frame.add(signOut);
 
@@ -42,6 +48,11 @@ public class AdminWindowView {
         accountScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         accountScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         frame.add(accountScrollPane);
+
+        newAccount.setBounds(399,200,200, 20);
+        deleteAccount.setBounds(200,200,199, 20);
+        frame.add(newAccount);
+        frame.add(deleteAccount);
 
         initAccounts();
         frame.setResizable(false);
@@ -65,10 +76,18 @@ public class AdminWindowView {
         for (String user : users) {
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            JLabel typeLabel = new JLabel("Account: " + user);
-            panel.add(typeLabel);
+            JLabel accountLabel = new JLabel("Account: " + user);
+            panel.add(accountLabel);
             panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-         
+
+            accountLabel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    selectedUser = user;
+                    updateLabels();
+                }
+            });
+
             accountPanel.add(panel);
         }
 
@@ -76,4 +95,25 @@ public class AdminWindowView {
         accountPanel.repaint();
     }
 
+    private void updateLabels() {
+        for (Component component : accountPanel.getComponents()) {
+            if (component instanceof JPanel) {
+                JPanel panel = (JPanel) component;
+                for (Component label : panel.getComponents()) {
+                    if (label instanceof JLabel) {
+                        JLabel accountLabel = (JLabel) label;
+                        String user = accountLabel.getText().substring(9);
+                        if (user.equals(selectedUser)) {
+                            accountLabel.setBackground(Color.BLUE);
+                            accountLabel.setForeground(Color.WHITE);
+                            accountLabel.setOpaque(true);
+                        } else {
+                            accountLabel.setForeground(Color.BLACK);
+                            accountLabel.setOpaque(false);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
