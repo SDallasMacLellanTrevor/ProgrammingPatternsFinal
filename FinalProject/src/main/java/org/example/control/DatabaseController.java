@@ -240,6 +240,39 @@ public class DatabaseController {
         }
     }
 
+    public static boolean accountExists(String userID) {
+        String sql = """
+                SELECT USERID FROM userAccounts WHERE USERID = ?
+                """;
+        try (Connection connection = DriverManager.getConnection(userUrl);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            ArrayList<String> accounts = new ArrayList<>();
+            preparedStatement.setString(1, userID);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void deleteUserRecord(String userID) {
+        String sql = """
+                DELETE FROM userAccounts WHERE USERID = ?
+                """;
+        try (Connection connection = DriverManager.getConnection(userUrl);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, userID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Creates a string made up of random characters to be used as a password salt
      * @return A string of 10 random characters, symbols, and numbers

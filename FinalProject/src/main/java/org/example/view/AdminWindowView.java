@@ -1,14 +1,12 @@
 package org.example.view;
 
 import org.example.control.DatabaseController;
-import org.example.model.BankAccountModel;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.sql.SQLException;
 import java.util.List;
 
 public class AdminWindowView {
@@ -66,6 +64,20 @@ public class AdminWindowView {
                 frame.dispose();
             }
         });
+
+        newAccount.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addAccount();
+            }
+        });
+
+        deleteAccount.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteAccount(Integer.parseInt(selectedUser));
+            }
+        });
     }
 
     private void initAccounts() {
@@ -115,5 +127,79 @@ public class AdminWindowView {
                 }
             }
         }
+    }
+
+    private void addAccount() {
+        JFrame addFrame = new JFrame();
+        addFrame.setLayout(null);
+        addFrame.setSize(new Dimension(300, 258));
+        addFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JLabel amount = new JLabel("New User ID:");
+        amount.setBounds(100,0, 150, 50);
+        JTextArea textArea = new JTextArea();
+        textArea.setBounds(0, 50, 284, 20);
+        textArea.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+
+        JLabel password = new JLabel("User Password:");
+        password.setBounds(100,80, 150, 50);
+        JTextArea passwordArea = new JTextArea();
+        passwordArea.setBounds(0, 130, 284, 20);
+        passwordArea.setBorder(BorderFactory.createLineBorder(Color.black, 2));
+
+        JButton addAccount = new JButton("Submit");
+        addAccount.setBounds(0, 170, 150, 50);
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setBounds(149, 170, 150, 50);
+
+        addAccount.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (DatabaseController.accountExists(textArea.getText())) {
+                    addFrame.dispose();
+                } else {
+                    try {
+                        DatabaseController.insertUserRecord(textArea.getText().trim(), passwordArea.getText());
+                        initAccounts();
+                        addFrame.dispose();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addFrame.dispose();
+            }
+        });
+
+        textArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != '.') {
+                    e.consume();
+                }
+            }
+        });
+
+        addFrame.add(amount);
+        addFrame.add(textArea);
+        addFrame.add(password);
+        addFrame.add(passwordArea);
+        addFrame.add(addAccount);
+        addFrame.add(cancelButton);
+        addFrame.setResizable(false);
+        addFrame.setLocation(frame.getWidth()/3, frame.getHeight()/3);
+        addFrame.setVisible(true);
+    }
+
+    private void deleteAccount(int userID) {
+        System.out.println(selectedUser);
+        DatabaseController.deleteUserRecord(selectedUser);
+        initAccounts();
     }
 }
